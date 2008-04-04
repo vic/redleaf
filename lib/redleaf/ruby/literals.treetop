@@ -1,0 +1,104 @@
+grammar RedLeaf::Ruby::Literals
+
+  rule literal
+    literal_nil / 
+    literal_true /
+    literal_false / 
+    literal_symbol /
+    literal_string /
+    literal_float /
+    literal_long / 
+    constant / 
+    nth_ref / 
+    global_var 
+  end
+
+  rule literal_nil
+    'nil' {
+      def sexp
+        [:nil]
+      end
+    }
+  end
+
+  rule literal_true
+  'true' {
+     def sexp
+       [:true]
+     end
+   }
+  end
+
+  rule literal_false
+   'false' {
+     def sexp
+       [:false]
+     end
+   }
+  end
+
+  rule literal_float
+    [+-]? [0-9]+ '.' [0-9]+ ([eE] [+-]? [0-9]+)? { 
+      def sexp
+        [:lit, text_value.to_f]
+      end
+    }
+  end
+
+  rule literal_long
+    [+-]? [0-9]+ {
+      def sexp
+        [:lit, text_value.to_i]
+      end
+    }
+  end
+
+  rule literal_symbol
+    ':' name:ruby_name { 
+      def sexp
+        [:lit, name.text_value.intern]
+      end
+    }
+  end
+
+  rule ruby_name 
+    [A-Za-z_$]+
+  end
+
+  rule ruby_identifier
+    [a-z_] [A-Za-z_]+
+  end
+
+  rule literal_string 
+    [\'\"] content:[^\'\"]+ [\'\"] { 
+      def sexp
+        [:str, content.text_value]
+      end
+    }
+  end
+
+  rule constant
+    [A-Z] [A-Za-z0-9_]* {
+      def sexp 
+        [:const, text_value.intern]
+      end
+    }
+  end
+
+  rule nth_ref 
+    '$' nth:[0-9]+ { 
+      def sexp
+        [:nth_ref, nth.text_value.to_i]
+      end 
+    }
+  end
+
+  rule global_var
+    '$' [a-zA-Z_] [a-zA-Z0-9_]+ { 
+      def sexp
+        [:gvar, text_value.intern]
+      end
+    }
+  end
+end
+

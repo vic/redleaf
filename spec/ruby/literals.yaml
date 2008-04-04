@@ -1,0 +1,44 @@
+nil: |
+  nil
+
+true: |
+  true
+
+false: |
+  false
+
+unsingned long: |
+  1
+
+positive signed long: |
+  +1
+
+negative signed long: |
+  -1
+
+unsigned float: |
+  1.3
+
+positive signed float: |
+  +1.3
+
+negative signed float: |
+  -1.3
+
+symbol: |
+  :hello
+
+simple string: |
+  "hello"
+
+constant: | 
+  Foo
+
+gvar: | 
+  $global
+
+gvar upcase: |
+  $Some
+
+nth_ref: |
+  $1

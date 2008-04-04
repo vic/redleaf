@@ -1,0 +1,41 @@
+open class: |
+  class Bar
+  end
+
+inline class: |
+  class SomeThing; end
+
+sub class: |
+  class Some < Foo
+  end
+
+sub class2: |
+  class Some< Foo
+  end
+
+open module: |
+  module Foo
+  end
+
+inline module: |
+  module Foo; end
+
+def method: |
+  def some
+  end
+
+def method args: |
+  def some foo, bar, baz
+  end
+
+def method one arg: |
+  def some foo
+  end
+
+def method one arg parens: |
+  def some(foo)
+  end
+
+def method two arg parens: |
+  def some(foo,bar)
+  end

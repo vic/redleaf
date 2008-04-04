@@ -1,0 +1,7 @@
+grammar RedLeaf::Ruby::Keywords
+
+  rule end_keyword
+    'end'
+  end
+
+end

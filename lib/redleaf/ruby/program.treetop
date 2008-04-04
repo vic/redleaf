@@ -1,0 +1,119 @@
+# -*- ruby -*-
+
+grammar RedLeaf::Ruby::Program
+
+  include RedLeaf::Ruby::Literals
+  include RedLeaf::Ruby::Keywords
+
+  rule program 
+    open_class / 
+    open_module /
+    def_method
+  end
+
+  rule def_method
+    'def' space method_name space? args:method_arguments? space_nl method_body? end_keyword {
+       def sexp
+         [:defn, method_name.text_value.intern,
+           [:scope, 
+            [:block, 
+             args.empty? ? [:args] : args.sexp, 
+             [:nil]
+            ]]]
+       end
+    }
+  end
+
+  rule method_name 
+     ruby_identifier ('?' / '=' / '!')?
+  end
+
+  rule argument_list
+    ruby_identifier space? ',' space? argument_list {
+      def sexp
+        [:args, ruby_identifier.text_value.intern] + argument_list.sexp[1..-1]
+      end
+    } /
+    ruby_identifier space? {
+      def sexp
+        [:args, ruby_identifier.text_value.intern]
+      end
+    }
+  end
+
+  rule method_arguments
+    '(' argument_list ')' {
+      def sexp
+        argument_list.sexp
+      end 
+    } / 
+    argument_list
+  end
+
+  rule method_body 
+    space {
+      def sexp
+        [:nil]
+      end
+    }
+  end
+
+  rule open_class 
+    'class' space module_name sub_class module_body space_nl? end_keyword {
+       def sexp 
+         name = module_name.sexp
+         name = name.last if name.first == :const
+         [:class, name, sub_class.sexp, module_body.sexp]
+       end
+    }
+  end
+  
+  rule sub_class
+    space? '<' space name:module_name { 
+       def sexp
+          name.sexp
+       end
+    } / 
+    space* {
+       def sexp
+           nil
+       end
+    }
+  end
+
+  rule open_module
+   'module' space module_name module_body space_nl? end_keyword {
+      def sexp 
+         name = module_name.sexp
+         name = name.last if name.first == :const
+         [:module, name, module_body.sexp]
+      end
+    }
+  end
+
+  rule module_name
+    constant 
+  end
+  
+  rule module_body
+    space_nl { 
+      def sexp
+        [:scope]
+      end
+    }
+  end
+
+  rule space
+    [ \t]+
+  end
+  
+  rule space_nl
+    space / new_line
+  end
+  
+  rule new_line
+    [\n\r;]+
+  end
+
+end
+
